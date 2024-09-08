@@ -5,9 +5,58 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Users</title>
+    <style>
+        .user-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .user-card {
+            width: calc(50% - 50px);
+            padding: 15px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .user-card button {
+            display: block;
+            margin-top: 10px;
+            text-align: center;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
+<h1>Users</h1>
+<div class="user-container" id="userContainer"></div>
+
+<script>
+    fetch('https://jsonplaceholder.typicode.com/users')
+        .then(response => response.json())
+        .then(users => {
+            const userContainer = document.getElementById('userContainer');
+            users.forEach(user => {
+                const userCard = document.createElement('div');
+                userCard.classList.add('user-card');
+                userCard.innerHTML = `
+                        <h2>Name: ${user.name}</h2>
+                        <p>ID: ${user.id}</p>
+                        <button onclick="storeUserId(${user.id})">View Details</button>
+                    `;
+                userContainer.appendChild(userCard);
+            });
+        });
+
+    function storeUserId(userId) {
+        localStorage.setItem('selectedUserId', userId);
+        window.location.href = 'user-details.html';
+    }
+</script>
 
 </body>
 </html>

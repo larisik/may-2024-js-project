@@ -5,9 +5,103 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>User Details</title>
+    <style>
+        .user-details {
+            margin: 20px;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+        }
+
+        .posts-btn {
+            width: 90%;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .posts-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .post {
+            width: calc(20% - 30px);
+            padding: 10px;
+            background-color: #e0e0e0;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+        }
+        .post button {
+            display: block;
+            margin-top: 10px;
+            background-color: #007BFF;
+            color: white;
+            text-align: center;
+            padding: 5px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
+<div class="user-details" id="userDetails"></div>
+<button id="loadPostsBtn" class="posts-btn">Posts of Current User</button>
+<div class="posts-container" id="postsContainer"></div>
 
+<script>
+    // id користувача з localstorage
+    const userId = localStorage.getItem('selectedUserId');
+
+    fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
+        .then(response => response.json())
+        .then(user => {
+            const userDetails = document.getElementById('userDetails');
+            userDetails.innerHTML = `
+                    <h1>${user.name} (ID: ${user.id})</h1>
+                    <p><strong>Username:</strong> ${user.username}</p>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <p><strong>Phone:</strong> ${user.phone}</p>
+                    <p><strong>Website:</strong> <a href="http://${user.website}" target="_blank">${user.website}</a></p>
+                    <h3>Address</h3>
+                    <p><strong>Street:</strong> ${user.address.street}</p>
+                    <p><strong>Suite:</strong> ${user.address.suite}</p>
+                    <p><strong>City:</strong> ${user.address.city}</p>
+                    <p><strong>Zipcode:</strong> ${user.address.zipcode}</p>
+                    <p><strong>Geo:</strong> Lat: ${user.address.geo.lat}, Lng: ${user.address.geo.lng}</p>
+                    <h3>Company</h3>
+                    <p><strong>Name:</strong> ${user.company.name}</p>
+                    <p><strong>Catch Phrase:</strong> ${user.company.catchPhrase}</p>
+                    <p><strong>BS:</strong> ${user.company.bs}</p>
+                `;
+        });
+
+    document.getElementById('loadPostsBtn').addEventListener('click', () => {
+        fetch(`https://jsonplaceholder.typicode.com/users/${userId}/posts`)
+            .then(response => response.json())
+            .then(posts => {
+                const postsContainer = document.getElementById('postsContainer');
+                postsContainer.innerHTML = '';
+                posts.forEach(post => {
+                    const postDiv = document.createElement('div');
+                    postDiv.classList.add('post');
+                    postDiv.innerHTML = `
+                            <h3>${post.title}</h3>
+                            <button onclick="storePostId(${post.id})">View Post</button>
+                        `;
+                    postsContainer.appendChild(postDiv);
+                });
+            });
+    });
+
+    function storePostId(postId) {
+        localStorage.setItem('selectedPostId', postId);
+        window.location.href = 'post-details.html';
+    }
+</script>
 </body>
 </html>

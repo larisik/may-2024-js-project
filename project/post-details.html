@@ -5,9 +5,67 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Post Details</title>
+    <style>
+        .post-details {
+            margin: 20px;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+        }
+        .comments-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .comment {
+            width: calc(25% - 30px);
+            padding: 10px;
+            background-color: #e0e0e0;
+            border: 1px solid #ccc;
+        }
+    </style>
 </head>
 <body>
+<div class="post-details" id="postDetails"></div>
+<h2>Comments</h2>
+<div class="comments-container" id="commentsContainer"></div>
 
+<script>
+    // id поста з localstorage
+    const postId = localStorage.getItem('selectedPostId');
+
+    fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`)
+        .then(response => response.json())
+        .then(post => {
+            const postDetails = document.getElementById('postDetails');
+            postDetails.innerHTML = `
+                    <h1>${post.title}</h1>
+                    <p><strong>Post ID:</strong> ${post.id}</p>
+                    <p><strong>User ID:</strong> ${post.userId}</p>
+                    <p><strong>Body:</strong> ${post.body}</p>
+                `;
+        });
+
+    // коментарії до поста
+    fetch(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`)
+        .then(response => response.json())
+        .then(comments => {
+            const commentsContainer = document.getElementById('commentsContainer');
+            comments.forEach(comment => {
+                const commentDiv = document.createElement('div');
+                commentDiv.classList.add('comment');
+                commentDiv.innerHTML = `
+                        <h4>Title: ${comment.name}</h4>
+                        <p><strong>Comment ID:</strong> ${comment.id}</p>
+                        <p>${comment.body}</p>
+                        <p><strong>Email:</strong> ${comment.email}</p>
+                    `;
+                commentsContainer.appendChild(commentDiv);
+            });
+        });
+</script>
 </body>
 </html>
